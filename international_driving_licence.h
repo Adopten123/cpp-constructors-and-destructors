@@ -52,6 +52,10 @@ public:
         DrivingLicence::SetVtable((DrivingLicence*)this);
     }
 
+    operator DrivingLicence() const {
+        return { licence_ };
+    }
+
     void PrintID() const {
         GetVtable()->PrintID(this);
     }

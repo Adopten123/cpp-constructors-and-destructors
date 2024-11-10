@@ -53,8 +53,7 @@ public:
     }
 
     operator IdentityDocument() const {
-        id_.SetVtable((IdentityDocument*)this);
-        return id_;
+        return { id_ };
     }
 
     void PrintID() const {
