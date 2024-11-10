@@ -10,18 +10,16 @@ public:
     //----------------------------------------------VTABLE--------------------------------------------------
 
     using PrintIDFunction = void(*)(const IdentityDocument* id);
-    using PrintUniqueIDCountFunction = void(*)();
     using DeleteFunction = void(*)(IdentityDocument* id);
     using GetIDFunction = int(*)(const IdentityDocument* id);
 
     struct Vtable {
         const PrintIDFunction PrintID;
-        const PrintUniqueIDCountFunction PrintUniqueIDCount;
         DeleteFunction Delete;
         const GetIDFunction GetID;
     };
 
-    static void SetVtable(IdentityDocument* id) {
+    static void SetVtable(const IdentityDocument* id) {
         *(IdentityDocument::Vtable**)id = &IdentityDocument::VTABLE;
     }
 
@@ -72,7 +70,7 @@ public:
     }
 
     int GetID() const {
-        return vptr_->GetID(this);
+        return unique_id_;
     }
 
 private:
@@ -99,4 +97,4 @@ private:
 
 int IdentityDocument::unique_id_count_ = 0;
 
-IdentityDocument::Vtable IdentityDocument::VTABLE = { IdentityDocument::PrintID, IdentityDocument::PrintUniqueIDCount, IdentityDocument::Delete, IdentityDocument::GetID };
+IdentityDocument::Vtable IdentityDocument::VTABLE = { IdentityDocument::PrintID, IdentityDocument::Delete, IdentityDocument::GetID };

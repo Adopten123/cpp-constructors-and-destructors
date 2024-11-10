@@ -13,10 +13,12 @@ public:
     
     using PrintIDFunction = void(*)(const Passport* passport);
     using DeleteFunction = void(*)(Passport* passport);
+    using GetIDFunction = int(*)(const Passport* id);
 
     struct Vtable {
         const PrintIDFunction PrintID;
         DeleteFunction Delete;
+        const GetIDFunction GetID;
     };
 
     static void SetVtable(Passport* passport) {
@@ -53,6 +55,11 @@ public:
         IdentityDocument::SetVtable((IdentityDocument*)this);
     }
 
+    operator IdentityDocument() const {
+        id_.SetVtable((IdentityDocument*)this);
+        return id_;
+    }
+
     void PrintID() const {
         GetVtable()->PrintID(this);
     }
@@ -67,6 +74,10 @@ public:
 
     void Delete() {
         GetVtable()->Delete(this);
+    }
+
+    int GetID() const {
+        return GetVtable()->GetID(this);
     }
 
 private:
@@ -89,10 +100,14 @@ private:
             << passport->expiration_date_.tm_year + 1900 << std::endl;
     }
 
+    static int GetID(const Passport* passport) {
+        return passport->id_.GetID();
+    }
+
     static void Delete(Passport* passport) {
         delete passport;
     }
 
 };
 
-Passport::Vtable Passport::VTABLE = { Passport::PrintID, Passport::Delete };
+Passport::Vtable Passport::VTABLE = { Passport::PrintID,Passport::Delete, Passport::GetID};

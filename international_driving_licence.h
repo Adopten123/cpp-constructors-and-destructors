@@ -12,10 +12,12 @@ public:
 
     using PrintIDFunction = void(*)(const InternationalDrivingLicence* int_licence);
     using DeleteFunction = void(*)(InternationalDrivingLicence* int_licence);
+    using GetIDFunction = int(*)(const InternationalDrivingLicence* id);
 
     struct Vtable {
         const PrintIDFunction PrintID;
         DeleteFunction Delete;
+        const GetIDFunction GetID;
     };
 
     static void SetVtable(InternationalDrivingLicence* int_licence) {
@@ -58,6 +60,10 @@ public:
         GetVtable()->Delete(this);
     }
 
+    int GetID() const {
+        return GetVtable()->GetID(this);
+    }
+
 private:
     DrivingLicence licence_;
 
@@ -70,6 +76,11 @@ private:
     static void Delete(InternationalDrivingLicence* int_licence) {
         delete int_licence;
     }
+
+    static int GetID(const InternationalDrivingLicence* licence) {
+        return licence->licence_.GetID();
+    }
 };
 
-InternationalDrivingLicence::Vtable InternationalDrivingLicence::VTABLE = { InternationalDrivingLicence::PrintID, InternationalDrivingLicence::Delete };
+InternationalDrivingLicence::Vtable InternationalDrivingLicence::VTABLE = { InternationalDrivingLicence::PrintID,
+                                                                            InternationalDrivingLicence::Delete, InternationalDrivingLicence::GetID};

@@ -20,8 +20,8 @@ public:
         const GetIDFunction GetID;
     };
 
-    static void SetVtable(DrivingLicence* passport) {
-        *(DrivingLicence::Vtable**)passport = &DrivingLicence::VTABLE;
+    static void SetVtable(DrivingLicence* licence) {
+        *(DrivingLicence::Vtable**)licence = &DrivingLicence::VTABLE;
     }
 
     const Vtable* GetVtable() const {
@@ -50,6 +50,11 @@ public:
     ~DrivingLicence() {
         std::cout << "DrivingLicence::Dtor()"sv << std::endl;
         IdentityDocument::SetVtable((IdentityDocument*)this);
+    }
+
+    operator IdentityDocument() const {
+        id_.SetVtable((IdentityDocument*)this);
+        return id_;
     }
 
     void PrintID() const {
